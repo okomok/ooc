@@ -7,7 +7,7 @@
 package com.github.okomok.ooc
 
 
-trait Set extends Class[Any]
+trait Set extends Class
 
 
 object Set {

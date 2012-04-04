@@ -7,11 +7,11 @@
 package com.github.okomok.ooc
 
 
-trait Class[A] { outer =>
-    def contains(x: A): Boolean
+trait Class { outer =>
+    def contains(x: Any): Boolean
 
-    final def where(p: A => Boolean): Class[A] = new Class[A] {
-        override def contains(x: A): Boolean = outer.contains(x) && p(x)
+    final def where(p: Any => Boolean): Class = new Class {
+        override def contains(x: Any): Boolean = outer.contains(x) && p(x)
     }
 
     final def isSmall: Boolean = isInstanceOf[Set]
@@ -19,8 +19,14 @@ trait Class[A] { outer =>
 }
 
 
+trait ClassProxy extends Class {
+    def selfClass: Class
+    override def contains(x: Any): Boolean = selfClass.contains(x)
+}
+
+
 object Class {
-    def any[A]: Class[A] = new Class[A] {
-        override def contains(x: A): Boolean = true
+    def any[A](implicit _C: ClassManifest[A]): Class = new Class {
+        override def contains(x: Any): Boolean = _C.erasure.isInstance(x)
     }
 }

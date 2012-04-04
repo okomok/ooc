@@ -8,5 +8,8 @@ package com.github.okomok
 
 
 package object ooc {
+    type Object = Any
+    type Morphism = Any
 
+    implicit def as(x: Any): Op_as = new Op_as(x)
 }
