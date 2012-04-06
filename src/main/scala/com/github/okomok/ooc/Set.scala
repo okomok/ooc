@@ -28,7 +28,19 @@ trait SetProxy extends Set {
 }
 
 
-object Set {
+object Set extends CategoryImpl {
+    override protected type _Object = Set
+    override protected type _Morphism = Function
+
+    override protected val _ob: Set = Set.any[Set]
+    override protected val _mor: Set = Set.any[Function]
+
+    override protected def _dom(f: _Morphism): _Object = f.dom
+    override protected def _cod(f: _Morphism): _Object = f.cod
+
+    override protected def _id(a: _Object): _Morphism = Function.Identity(a)
+    override protected def _compose(g: _Morphism, f: _Morphism): _Morphism = Function.Composite(g, f)
+
     def any[A](implicit _C: ClassManifest[A]): Set = new _Any(_C)
 
     private class _Any[A](val _C: ClassManifest[A]) extends Set {

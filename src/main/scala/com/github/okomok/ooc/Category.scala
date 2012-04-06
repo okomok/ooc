@@ -21,9 +21,7 @@ trait Category extends SetProxy {
     final def apply(a: Object, b: Object): Set = mor.filter(f => (dom(f) == a) && (cod(f) == b))
     //final def apply[a, b, R](a: a, b: b)(implicit _A: Category.Apply[a, b, R]): R = _A(this, a, b)
 
-    def op: Category = new OppositeCategory(this)
-
-    object -> {
+    object -> extends Category.Morphisms(this) {
         def unapply(f: Morphism): Option[(Object, Object)] = Some(dom(f), cod(f))
     }
 
@@ -31,6 +29,10 @@ trait Category extends SetProxy {
         def o(f: Morphism): Morphism = compose(g, f)
     }
     final implicit def o(g: Morphism): Op_o = new Op_o(g)
+
+    def op: Category = Category.Opposite(this)
+    def *(that: Category): Category = Category.Product(this, that)
+    def ^(that: Category): Category = Category.Functors(that, this)
 }
 
 
@@ -47,6 +49,8 @@ trait CategoryProxy extends Category {
     override def compose(g: Morphism, f: Morphism): Morphism = selfCategory.compose(g, f)
 
     override def op: Category = selfCategory.op
+    override def *(that: Category): Category = selfCategory.*(that)
+    override def ^(that: Category): Category = selfCategory.^(that)
 }
 
 
@@ -74,7 +78,70 @@ trait CategoryImpl extends Category {
 }
 
 
-object Category {
+object Category extends CategoryImpl {
+    override protected type _Object = Category
+    override protected type _Morphism = Functor
+
+    override protected val _ob: Set = Set.any[_Object]
+    override protected val _mor: Set = Set.any[_Morphism]
+
+    override protected def _dom(f: _Morphism): _Object = f.dom
+    override protected def _cod(f: _Morphism): _Object = f.cod
+
+    override protected def _id(a: _Object): _Morphism = Functor.Identity(a)
+    override protected def _compose(g: _Morphism, f: _Morphism): _Morphism = Functor.Composite(g, f)
+
+    final case class Opposite(_1: Category) extends CategoryProxy {
+        override def selfCategory: Category = _1
+
+        override def dom(f: Morphism): Object = _1.cod(f)
+        override def cod(f: Morphism): Object = _1.dom(f)
+
+        override def op: Category = _1
+    }
+
+    class Morphisms(_1: Category) extends CategoryImpl {
+        override protected type _Object = Morphism
+        override protected type _Morphism = Square
+
+        override protected val _ob: Set = _1.mor
+        override protected val _mor: Set = Set.any[Square]
+
+        override protected def _dom(f: _Morphism): _Object = f.left
+        override protected def _cod(f: _Morphism): _Object = f.right
+
+        override protected def _id(a: _Object): _Morphism = Square(a, _1.id(_1.dom(a)), a, _1.id(_1.cod(a)))
+        override protected def _compose(g: _Morphism, f: _Morphism): _Morphism = Square(f.left, _1.compose(g.top, f.top), g.right, _1.compose(g.bottom, f.bottom))
+    }
+
+    final case class Product(_1: Category, _2: Category) extends CategoryImpl {
+        override protected type _Object = (Object, Object)
+        override protected type _Morphism = (Morphism, Morphism)
+
+        override protected val _ob: Set = Set.any[_Object]
+        override protected val _mor: Set = Set.any[_Morphism]
+
+        override protected def _dom(f: _Morphism): _Object = (_1.dom(f._1), _2.dom(f._2))
+        override protected def _cod(f: _Morphism): _Object = (_1.cod(f._1), _2.cod(f._2))
+
+        override protected def _id(a: _Object): _Morphism = (_1.id(a._1), _2.id(a._2))
+        override protected def _compose(g: _Morphism, f: _Morphism): _Morphism = (_1.compose(g._1, f._1), _2.compose(g._2, f._2))
+    }
+
+    final case class Functors(_1: Category, _2: Category) extends CategoryImpl {
+        override protected type _Object = Functor
+        override protected type _Morphism = NaturalTransformation
+
+        override protected val _ob: Set = Set.any[_Object].filter { F => (F.as[Functor].dom == _1) && (F.as[Functor].cod == _2) }
+        override protected val _mor: Set = Set.any[_Morphism]
+
+        override protected def _dom(f: _Morphism): _Object = f.dom
+        override protected def _cod(f: _Morphism): _Object = f.cod
+
+        override protected def _id(a: _Object): _Morphism = NaturalTransformation.Identity(a)
+        override protected def _compose(g: _Morphism, f: _Morphism): _Morphism = NaturalTransformation.Composite(g, f)
+    }
+
 /*
     sealed trait Apply[a, b, R] {
         def apply(C: Category, a: a, b: b): R
