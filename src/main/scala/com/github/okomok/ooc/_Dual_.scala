@@ -7,11 +7,11 @@
 package com.github.okomok.ooc
 
 
-final class _Dual_(val dual: Category) extends CategoryProxy {
-    override def selfCategory: Category = dual
+final case class _Dual_(_1: Category) extends CategoryProxy {
+    override def selfCategory: Category = _1
 
-    override def dom(f: Morphism): Object = dual.cod(f)
-    override def cod(f: Morphism): Object = dual.dom(f)
+    override def dom(f: Morphism): Object = _1.cod(f)
+    override def cod(f: Morphism): Object = _1.dom(f)
 
-    override def op: Category = dual
+    override def op: Category = _1
 }
