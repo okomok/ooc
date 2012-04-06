@@ -20,7 +20,7 @@ trait Category extends SetProxy {
     /*final*/ override def selfSet: Set = ob
     final def apply(a: Object, b: Object): Set = mor.filter(f => (dom(f) == a) && (cod(f) == b))
 
-    /*final*/ def op: Category = new _Dual_(this)
+    def op: Category = new _Dual_(this)
 
     object -> {
         def unapply(f: Morphism): Option[(Object, Object)] = Some(dom(f), cod(f))
@@ -44,6 +44,8 @@ trait CategoryProxy extends Category {
 
     override def id(a: Object): Morphism = selfCategory.id(a)
     override def compose(g: Morphism, f: Morphism): Morphism = selfCategory.compose(g, f)
+
+    override def op: Category = selfCategory.op
 }
 
 
