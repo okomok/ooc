@@ -7,11 +7,9 @@
 package com.github.okomok.ooc
 
 
-trait Function {
+trait Function extends (Any => Any) {
     def dom: Set
     def cod: Set
-
-    def apply(x: Any): Any
 
     final def o(that: Function): Function = Function.compose(this, that)
 }

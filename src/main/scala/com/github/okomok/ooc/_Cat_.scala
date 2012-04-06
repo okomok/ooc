@@ -7,15 +7,16 @@
 package com.github.okomok.ooc
 
 
-object _Cat_ extends Category {
-    override def dom(f: Morphism): Object = f.as[Functor].dom
-    override def cod(f: Morphism): Object = f.as[Functor].cod
+object _Cat_ extends CategoryImpl {
+    override protected type _Object = Category
+    override protected type _Morphism = Functor
 
-    override def id(a: Object): Morphism = Functor.id(a.as[Category])
-    override def compose(g: Morphism, f: Morphism): Morphism = Functor.compose(g.as[Functor], f.as[Functor])
+    override protected val _ob: Set = Set.any[Category]
+    override protected val _mor: Set = Set.any[Functor]
 
-    override val ob: Class = Class.any[Category]
-    override def mor(a: Object, b: Object): Class = Class.any[Functor].where {
-        f => (f.as[Functor].dom == a) && (f.as[Functor].cod == b)
-    }
+    override protected def _dom(f: _Morphism): _Object = f.dom
+    override protected def _cod(f: _Morphism): _Object = f.cod
+
+    override protected def _id(a: _Object): _Morphism = Functor.id(a)
+    override protected def _compose(g: _Morphism, f: _Morphism): _Morphism = Functor.compose(g, f)
 }
