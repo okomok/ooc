@@ -11,7 +11,7 @@ trait Function extends (Any => Any) {
     def dom: Set
     def cod: Set
 
-    final def o(that: Function): Function = Function.compose(this, that)
+    final def o(that: Function): Function = CompositeFunction(this, that)
 }
 
 
@@ -21,7 +21,7 @@ object Function {
         override val cod: Set = Set.any(_CB)
         override def apply(x: Any): Any = f(x.asInstanceOf[A])
     }
-
+/*
     def id(a: Set): Function = new Function {
         override val dom: Set = a
         override val cod: Set = a
@@ -33,4 +33,5 @@ object Function {
         override val cod: Set = g.cod
         override def apply(x: Any): Any = g(f(x))
     }
+*/
 }

@@ -16,11 +16,12 @@ trait NaturalTransformation {
     final def domF: Category = dom.dom
     final def codF: Category = dom.cod
 
-    final def o(that: NaturalTransformation) = NaturalTransformation.compose(this, that)
+    final def o(that: NaturalTransformation) = CompositeNaturalTransformation(this, that)
 }
 
 
 object NaturalTransformation {
+/*
     def id(F: Functor): NaturalTransformation = new NaturalTransformation {
         override def dom: Functor = F
         override def cod: Functor = F
@@ -32,4 +33,5 @@ object NaturalTransformation {
         override val cod: Functor = t.cod
         override def apply(a: Object): Morphism = t.codF.compose(t(a), s(a))
     }
+*/
 }

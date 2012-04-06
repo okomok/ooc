@@ -14,11 +14,14 @@ trait Functor {
     def at(a: Object): Object
     def apply(f: Morphism): Morphism
 
-    final def o(that: Functor) = Functor.compose(this, that)
+    final def o(that: Functor): Functor = CompositeFunctor(this, that)
+
+    def op: Functor = OppositeFunctor(this)
 }
 
 
 object Functor {
+/*
     def id(C: Category): Functor = new Functor {
         override def dom: Category = C
         override def cod: Category = C
@@ -47,7 +50,7 @@ object Functor {
         override def apply(g: Morphism): Morphism = new Function {
             override val dom: Set = C(a, C.dom(g))
             override val cod: Set = C(a, C.cod(g))
-            override def apply(g: Morphism): Morphism = Function((f: Morphism) => C.compose(g, f))
+            override def apply(f: Morphism): Morphism = C.compose(g, f)
         }
     }
 
@@ -58,7 +61,7 @@ object Functor {
         override def apply(f: Morphism): Morphism = new Function {
             override val dom: Set = C(C.cod(f), b)
             override val cod: Set = C(C.dom(f), b)
-            override def apply(f: Morphism): Morphism = Function((g: Morphism) => C.compose(g, f))
+            override def apply(g: Morphism): Morphism = C.compose(g, f)
         }
     }
 
@@ -72,10 +75,7 @@ object Functor {
             override val dom: Set = C(C.cod(f), C.dom(f))
             override val cod: Set = C(C.dom(f), C.cod(f))
             override def apply(h_g: Morphism): Morphism = h_g match {
-                case (h, g) => Function { (f: Morphism) =>
-                    import C.o
-                    g o f o h
-                }
+                case (h, g) => C.compose(g, C.compose(f, h))
             }
         }
     }
@@ -86,4 +86,5 @@ object Functor {
         override def at(a: Object): Object = F.at(a)
         override def apply(f: Morphism): Morphism = F(f)
     }
+*/
 }

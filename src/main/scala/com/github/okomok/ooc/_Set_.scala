@@ -17,6 +17,6 @@ object _Set_ extends CategoryImpl {
     override protected def _dom(f: _Morphism): _Object = f.dom
     override protected def _cod(f: _Morphism): _Object = f.cod
 
-    override protected def _id(a: _Object): _Morphism = Function.id(a)
-    override protected def _compose(g: _Morphism, f: _Morphism): _Morphism = Function.compose(g, f)
+    override protected def _id(a: _Object): _Morphism = IdentityFunction(a)
+    override protected def _compose(g: _Morphism, f: _Morphism): _Morphism = CompositeFunction(g, f)
 }

@@ -7,7 +7,7 @@
 package com.github.okomok.ooc
 
 
-final case class _Opposite_(_1: Category) extends CategoryProxy {
+final case class OppositeCategory(_1: Category) extends CategoryProxy {
     override def selfCategory: Category = _1
 
     override def dom(f: Morphism): Object = _1.cod(f)

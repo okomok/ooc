@@ -19,8 +19,9 @@ trait Category extends SetProxy {
 
     /*final*/ override def selfSet: Set = ob
     final def apply(a: Object, b: Object): Set = mor.filter(f => (dom(f) == a) && (cod(f) == b))
+    //final def apply[a, b, R](a: a, b: b)(implicit _A: Category.Apply[a, b, R]): R = _A(this, a, b)
 
-    def op: Category = new _Opposite_(this)
+    def op: Category = new OppositeCategory(this)
 
     object -> {
         def unapply(f: Morphism): Option[(Object, Object)] = Some(dom(f), cod(f))
@@ -70,4 +71,33 @@ trait CategoryImpl extends Category {
 
     final override def id(a: Object): Morphism = _id(a.as[_Object])
     final override def compose(g: Morphism, f: Morphism): Morphism = _compose(g.as[_Morphism], f.as[_Morphism])
+}
+
+
+object Category {
+/*
+    sealed trait Apply[a, b, R] {
+        def apply(C: Category, a: a, b: b): R
+    }
+
+    sealed trait ApplyLowPriority { this: Apply.type =>
+        implicit def _ofDefault[a, b]: Apply[a, b, Set] = new Apply[a, b, Set] {
+            override def apply(C: Category, a: a, b: b): Set = C.mor.filter(f => (C.dom(f) == a) && (C.cod(f) == b))
+        }
+    }
+
+    object Apply extends ApplyLowPriority {
+        implicit def _ofHomFunctor[a]: Apply[a, X.type, Functor] = new Apply[a, X.type, Functor] {
+            override def apply(C: Category, a: a, b: X.type): Functor = Functor.hom(C, a)
+        }
+
+        implicit def _ofCHomFunctor[b]: Apply[X.type, b, Functor] = new Apply[X.type, b, Functor] {
+            override def apply(C: Category, a: X.type, b: b): Functor = Functor.chom(C, b)
+        }
+
+        implicit val _ofBiHomFunctor: Apply[X.type, X.type, Functor] = new Apply[X.type, X.type, Functor] {
+            override def apply(C: Category, a: X.type, b: X.type): Functor = Functor.bihom(C)
+        }
+    }
+*/
 }
